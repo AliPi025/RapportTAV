@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP n°3</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+    <div class="header">
+        <div class="linear-horizontal">
+        <button class="back-button" onclick="location.href='../index.html'">
+            <span></span>
+            <span></span>
+        </button>
+            <h1>TP n°3 – Classification Bayésienne</h1>
+            
+        </div>
+        
+    </div>
+
+    <div class="report-text">
+        <div class="bckgnd">
+            <section>
+                <h2>A. Présentation du sujet</h2>
+                <p>L’objectif de ce TP était de mettre en place et 
+                découvrir plusieurs techniques de segmentation 
+                qui permettent de classifier ou partitionner des images. 
+                Dans notre cas, notre tâche était de traiter une image en 
+                niveaux de gris contenant 3 formes discernables plus le fond, 
+                soit 4 composantes différentes. Bien que les techniques 
+                d’échantillonnage utilisées soient différentes, nous effectuerons 
+                cependant toujours une classification par maximisation de vraisemblance 
+                suivie d’une maximisation à posteriori.</p>
+            </section>
+
+            <section>
+                <h2>B. Segmentation</h2>
+                <h3>1. Classification supervisée</h3>
+                <p>La première segmentation est dite “supervisée”, on entend 
+                    par là qu’elle nécessite une détection manuelle préalable 
+                    de l’utilisateur afin de faire ses calculs. Comme on peut 
+                    le voir sur la figure 1, l’utilisateur place 4 rectangles sur 
+                    les gris qu’il considère appartenir à la même forme. Notre algorithme 
+                    va donc pour chacun de ces échantillons, estimer la moyenne et la 
+                    variance de la classe correspondante. Il va ensuite calculer pour 
+                    chaque pixel son maximum de vraisemblance ce qui nous donne le résultat 
+                    de la figure 2.</p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/echantillonnageUtil.png">
+                        <div class="figure-desc">Figure 1. Échantillonnage effectué par un utilisateur</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/MVSup.png">
+                        <div class="results-text">Pixels correctement classés par MV : 93.66 %</div>
+                        <div class="figure-desc">Figure 2. Résultat initial obtenu par maximisation de la vraisemblance (supervisée)</div>
+                    </div>
+                </div>
+                <p>On obtient donc de bons résultats (autour des 94% de correspondance)
+                     mais comme on peut le voir, la classification reste parsemée de pixels hors de leur région.
+                    Pour y remédier, on applique l'algorithme dit du “recuit simulé”, 
+                    celui-ci est tiré de la métallurgie et consiste à faire décroître 
+                    une “température” sur plusieurs itérations afin de faire décroître une 
+                    Énergie. Plus simplement, tant que la température est élevée, l’énergie 
+                    peut admettre des changements de classes qui la font croître.
+                    Cela nous donne en sortie le résultat en Figure 3.a qui correspond généralement à un classement de plus de 99%.
+                </p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP3/RecuitSup.png">
+                        <div class="results-text">Pixels correctement classés par MAP : 99.95 %</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP3/RecuitNonSup.png">
+                        <div class="results-text">Pixels correctement classés par MAP : 99.84 %</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP3/RecuitPart.png">
+                        <div class="results-text">Pixels correctement classés par MAP : 99.95 %</div>
+                    </div>
+                </div>
+                <div class="figure-desc">Figure 3. Résultats obtenu après 50 itérations du recuit simulé (maximisation à posteriori)
+                    (a.) supervisée, (b.) non supervisée et (c.) partitionnement
+                    </div>
+                <div class="spaceV"></div>
+                <h3>2. Classification non supervisée</h3>
+                <p>Dans sa version non supervisée, nous n’avons donc plus besoin 
+                    de l’avis d’un “expert” afin d’échantillonner notre image. 
+                    Nous allons à la place utiliser son histogramme. En effet, nous 
+                    considérons ici que l’histogramme est un mélange de 4 gaussiennes 
+                    ce qui nous pousse donc à utiliser un problème en moindres carrés 
+                    afin d’estimer les paramètres de chaque gaussienne de manière à ce 
+                    qu’elles “collent” au plus aux valeurs de l’histogramme.
+               </p>
+               <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/gaussiennes.png">
+                        <div class="figure-desc">Figure 4. Exemple de 4 gaussiennes obtenu après estimation des poids</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/MVNonSup.png">
+                        <div class="results-text">Pixels correctement classés par MV : 93.54 %</div>
+                        <div class="figure-desc">Figure 5. Résultat initial obtenu par maximisation de la vraisemblance (non supervisée)</div>
+                    </div>
+                </div>
+                <p>On utilise ensuite les paramètres des gaussiennes comme étant ceux 
+                    de nos classes (moyenne et variance = écart-type^2) et on maximise 
+                    à nouveau la vraisemblance qui nous donne le résultat en figure 5. 
+                    Et enfin on applique à nouveau le recuit simulé qui nous donne le 
+                    résultat de la figure 3.b.
+               </p>
+               <h3>3. Partitionnement</h3>
+                <p>L’idée initiale de cette technique a été de regrouper les pixels en 
+                    fonction de leur niveau de gris et de leur position dans l’image. 
+                    Pour ce faire, nous sommes partis du principe de segmentation par 
+                    superpixels qui place N centres dans l’image (ils possèdent donc une 
+                    position et une couleur) et on associe chaque pixel au centre le plus 
+                    proche en terme de distance mais aussi de couleur. Sur cette étape, 
+                    la distance est calculée comme ceci : D = 0.5*Dgrey + Dxy; Cela permet 
+                    de donner plus d’importance à la position du pixel en tenant tout de 
+                    même compte de sa couleur. Comme on peut le voir sur la Figure 6., on 
+                    voit déjà une segmentation correcte des formes. Ensuite, on déplace les 
+                    centres pour qu’ils soient justement centrés sur leur nouveau groupe de 
+                    pixels auquel ils sont associé. L’algorithme réitère normalement jusqu’à 
+                    ce que les centres ne se déplacent plus voire peu.
+               </p>
+               <p>Dans notre cas, nous avons besoin de 4 classes et non 100, c’est pourquoi 
+                    nous ajoutons donc plusieurs étapes. La première étant que nous modifions la 
+                    couleur de tous les pixels d’un même groupe (ceux-ci prennent tous la couleur 
+                    égale à la moyenne du groupe). Nous calculons ensuite la différence minimale 
+                    entre deux centres en faisant cette fois l’appui sur la couleur : D = Dgrey + 0.5*Dxy; 
+                    Ces deux centres sont ensuites fusionnés ce qui réduit le nombre de classe de 1. 
+                    Si nous n’ajoutons pas la dernière étape que je décris par la suite, nous avons 
+                    effectivement 4 classes en sortie mais le résultat n’est pas du tout celui attendu, 
+                    nous nous retrouvons avec 4 régions qui détoure plus ou moins bien l’ellipse 
+                    (couleur la plus claire) mais qui font constamment disparaître le cercle 
+                    (couleur la plus foncé) (voir Figure 7.).
+                </p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/seg100.png">
+                        <div class="figure-desc">Figure 6. Segmentation de l’image à l’aide de 100 superpixels</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/seg4.png">
+                        <div class="figure-desc">Figure 7. Segmentation de l’image à l’aide de 4 superpixels</div>
+                    </div>
+                </div>
+                <p>
+                    Pour y remédier on ajoute donc une dernière étape qui ne s’active 
+                    qu’à partir d’une certaine itération et qui vérifie pour chaque centre 
+                    s’il n’y a pas un autre groupe dans l’image qui possède une couleur 
+                    similaire et si c’est le cas, le groupe en question prend la couleur du centre. 
+                    Cela crée une fusion des groupes à partir d’une étape où les superpixels sont 
+                    moins nombreux et triés. On atteint donc 4 couleurs avant d’atteindre 4 superpixels. 
+                    Ce qui nous donne un résultat satisfaisant (voir Figure 8.)
+                </p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/echantillonnagePart.png">
+                        <div class="figure-desc">Figure 8. Échantillonnage par partitionnement</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP3/MVPart.png">
+                        <div class="results-text">Pixels correctement classés par MV : 93.84 %</div>
+                        <div class="figure-desc">Figure 9. Résultat initial obtenu par maximisation de la vraisemblance (partitionnement)</div>
+                    </div>
+                </div>
+                <p>On calcule ensuite, comme précédemment, le maximum de vraisemblance et le maximum à posteriori. (voir Figure 9. et 3.c).</p>
+                
+            </section>
+            <section>
+                <h2>C. Conclusion</h2>
+                <p>Toutes ces techniques sont intéressantes, choisir l’une ou l’autre dépend 
+                    probablement du contexte d’utilisation même s’il est vrai que la version 
+                    non supervisée reste la plus efficace car elle ne nécessite pas/peu de 
+                    paramétrage en amont.</p>
+                <p>
+                    Concernant la technique par partitionnement, celle-ci mérite quelques 
+                    ajustements, notamment peut-être sur l’initialisation des centres qui 
+                    est faite de façon aléatoire, ce qui n’est probablement pas la meilleure méthode. 
+                    De plus, certaines itérations provoquent une disparition du cercle (Figure 10.), 
+                    cela est, je pense, lié à la dernière étape citée qui fusionne les couleurs 
+                    (le cercle possède une couleur proche de celle du fond et est donc fusionné avec).
+                </p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-1" src="./assets/TP3/echantillonnageErrone.png">
+                        <div class="figure-desc">Figure 10. Échantillonnage erroné par partitionnement</div>
+                    </div>
+                </div>
+            </section>
+            
+        </div>
+
+        
+    </div>
+    
+  
+  
+    
+<script src="script.js"></script>
+</body>
+</html>
+

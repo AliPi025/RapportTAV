@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP n°10</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+    <div class="header">
+        <div class="linear-horizontal">
+        <button class="back-button" onclick="location.href='../index.html'">
+            <span></span>
+            <span></span>
+        </button>
+            <h1>TP n°10 – Manipulation de signaux audionumériques</h1>
+            
+        </div>
+        
+    </div>
+
+    <div class="report-text">
+        <div class="bckgnd">
+            <section>
+                <h2>A. Présentation du sujet</h2>
+                <p>Ce TP nous a permis de mettre en place de nombreuses techniques 
+                    de modification d’un signal audio. Nous avons donc pour cela écrit 
+                    la Transformation de Fourier à court terme, qui nous permet d’obtenir 
+                    le sonagramme du signal et donc de travailler plus simplement dessus. 
+                    C’est notamment intéressant quand il s’agit de modifier ou tenir 
+                    compte des fréquences présentes dans le signal à un instant t.
+                </p>
+            </section>
+
+            <section>
+                <h2>B. Manipulations</h2>
+                <h3>1. Mise en place de la TFCT</h3>
+                <p>Afin de pouvoir jouer avec les fréquences de notre signal, 
+                    il semble judicieux de les mettre en évidence. Pour ce faire, 
+                    nous avons utilisé la Transformation de Fourier à court terme. 
+                    Celle-ci consiste à appliquer une fenêtre glissante sur un découpage 
+                    du signal et calculer pour chacun sa Transformée de Fourier Discrète. 
+                    On les concatène ensuite ce qui nous donne en sortie le sonagramme 
+                    (Il faut penser à ne garder que les fréquences positives lorsque le signal est réel). 
+                    Tout ceci nous permet donc de passer de la Figure 1 à 2. pour le son suivant:
+                </p>
+                
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-1">
+                            <source src="./assets/TP10/sons/audible.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 1. Son de test</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP10/figures/signalAudible.png">
+                        <div class="figure-desc">Figure 1. Signal temporel (Son 1.)</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP10/figures/sonoAudible.png">
+                        <div class="figure-desc">Figure 2. Sonagramme obtenu à partir du signal temporel de la Figure 1. (Son 1.)</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+                <h3>2. Filtres fréquentiels</h3>
+
+                <p>Maintenant que nous avons accès à nos fréquences, 
+                    nous pouvons mettre en place des filtres. Nous entendons 
+                    par là des fonctions qui nous permettent de garder ou non 
+                    certaines fréquences afin de mettre l’accent sur différents 
+                    aspects du signal. Nous avons par exemple les filtres passe-bas 
+                    et passe-haut qui permettent entre autres de retirer des bruits parasites 
+                    sur les communications (bruits de fond ou interférences). 
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mpl.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 2. Extrait de test</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/passeBas.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">1000 Hz</div>
+                        <div class="figure-desc">Son 3. Extrait filtré par passe-bas</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/passeHaut.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">1000 Hz</div>
+                        <div class="figure-desc">Son 4. Extrait filtré par passe-haut</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP10/figures/sonoOrig.png">
+                        <div class="figure-desc">Figure 3. Sonagramme original (Son 2.)</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP10/figures/passeBas.png">
+                        <div class="figure-desc">Figure 4. Sonagramme filtrage passe-bas 1000Hz (Son 3.)</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP10/figures/passeHaut.png">
+                        <div class="figure-desc">Figure 5. Sonagramme filtrage passe-haut 1000Hz (Son 4.)</div>
+                    </div>
+                </div>
+
+                <p>Comme on peut le voir sur les résultats ci-dessus (Figure 4 et 5), 
+                    ces filtres sont assez basiques, ils suppriment 
+                    toutes les fréquences au-dessus/au-dessous d’une certaine fréquence.
+                </p>
+
+                <h3>3. Modifications du signal/sonagramme</h3>
+
+                <p>Enfin, en plus de pouvoir retirer des fréquences, 
+                    on veut aussi avoir la possibilité d’appliquer des transformations à nos sonogrammes. 
+                </p>
+
+                <p>On a tout d’abord le changement de vitesse, qui change la fréquence d’échantillonnage modifiant 
+                    ainsi sa temporalité mais aussi son contenu fréquentiel.
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/Beethoven.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 5. Extrait de test</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/vitesse.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">vitesse = 1.5</div>
+                        <div class="figure-desc">Son 6. Extrait accéléré</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/vitesse.png">
+                        <div class="results-text">vitesse = 1.5</div>
+                        <div class="figure-desc">Figure 6. Comparaison du son original et accéléré (Son 5. et 6.)</div>
+                    </div>
+                </div>
+
+                <p>Les résultats ci-dessus montrent qu’il y a effectivement une accélération du son mais 
+                    on entend aussi que les fréquences ont effectivement été élevées.
+                </p>
+
+                <p>Ensuite, nous avons l’étirement temporel, celui-ci change la vitesse du 
+                    signal en gardant cette fois-ci le même contenu fréquentiel. Cela est 
+                    rendu possible grâce à un algorithme qui traite le sonogramme comme une 
+                    image et lui applique une interpolation linéaire. On obtient donc effectivement un signal 
+                    plus “long” mais dont les fréquences sonores restent les mêmes.
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/etirement.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">étirement = 0.8</div>
+                        <div class="figure-desc">Son 7. Extrait étiré</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/etirement.png">
+                        <div class="results-text">étirement = 0.8</div>
+                        <div class="figure-desc">Figure 7. Comparaison du son original et étiré (Son 6. et 7.)</div>
+                    </div>
+                </div>
+
+                <p>Il y a aussi la transposition qui permet de modifier la hauteur d’un son. 
+                    Pour ce faire, on utilise les deux fonctions précédentes, on étire le son 
+                    d’un facteur de 1/prop ce qui nous donne un son de durée différente mais 
+                    de contenu similaire puis on accélère son échantillonnage de prop, ce qui remet le signal 
+                    à sa taille originale tout en modifiant la hauteur de la fréquence.
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/transposition.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">transposition = 1.1</div>
+                        <div class="figure-desc">Son 8. Extrait transposé</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/transposition.png">
+                        <div class="results-text">transposition = 1.1</div>
+                        <div class="figure-desc">Figure 8. Comparaison du son original et transposé (Son 6. et 8.)</div>
+                    </div>
+                </div>
+
+                <p>Enfin, on peut vouloir renverser le signal, c’est-à-dire le lire à l’envers. 
+                    Pour cela, il suffit simplement d’inverser les lignes 
+                    composants le signal. Et on obtient donc les résultats ci-dessous.
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/renversement.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 9. Extrait renversé</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/renversement.png">
+                        <div class="figure-desc">Figure 9. Comparaison du son original et renversé (Son 6. et 9.)</div>
+                    </div>
+                </div>
+
+                <p>Toutes ces fonctions nous permettent donc d’appliquer plusieurs 
+                    types de transformation au son. Dans le monde de la musique, ceux-ci 
+                    sont utilisés pour découper et modifier des sons afin de créer des 
+                    “samples” qui mis bout à bout donnent des morceaux iconiques.
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysteryMusic.mp3" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 10. Extrait original 1</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysterySample.mp3" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 11. Sample du Son 10</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysterySampleModified.mp3" type="audio/wav">
+                        </audio>
+                        <div class="results-text">vitesse = 1.3</div>
+                        <div class="figure-desc">Son 12. Sample accéléré</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+                <div class="linear-horizontal space-evenly sounds">
+                    <h2>=</h2>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysteryResult.mp3" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 13. Extrait du morceau final 1</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+
+
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysteryMusic2.mp3" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 14. Extrait original 2</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysterySample2.mp3" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 15. Sample du Son 14</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysterySampleModified2.mp3" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 16. Sample renversé</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+                <div class="linear-horizontal space-evenly sounds">
+                    <h2>=</h2>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/mysteryResult2.mp3" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 17. Extrait du morceau final 2</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <h3>4. Compression du signal/sonogramme</h3>
+
+                <p>Maintenant, nous avons besoin de partager ce son, sauf que certaines 
+                    personnes n’ont pas des dizaines de gigaoctets à donner à un seul morceau, 
+                    il faut donc pouvoir le compresser, c’est-à-dire minimiser le nombre 
+                    d’informations en gardant une compréhensibilité du son. Une façon de faire 
+                    est de parcourir le sonagramme et pour chaque colonne, ne garder que les N 
+                    coefficients/lignes les plus élevés et donc les plus importantes dans le rendu 
+                    sonore. Cela nous donne donc les résultats ci-dessous (Son 18. et Figure 10.). 
+                    On entend effectivement 
+                    une perte mais le son et les notes du morceau restent intelligibles.
+                </p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/compression.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">N_coeff = 100</div>
+                        <div class="figure-desc">Son 18. Compression (Son 2.)</div>
+                    </div>
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/compression.png">
+                        <div class="results-text">N_coeff = 100</div>
+                        <div class="figure-desc">Figure 10. Sonagramme compressé (Son 18.)</div>
+                    </div>
+                </div>
+
+                <p>Afin d'augmenter le taux de compression, il y a plusieurs solutions, 
+                    la première et celle qui garde le plus de compréhensibilité est l’utilisation 
+                    d’un seuillage. Cela revient à parcourir les colonnes du sonagramme et éliminer 
+                    tous les coefficients/lignes dont l’intensité se situent sous le seuil 
+                    (on considère qu’ils ne contribuent pas suffisamment au rendu sonore). 
+                    Cela implique donc aussi que nous ne gardons plus les N coefficients comme nous le faisions 
+                    précédemment sur des colonnes qui peuvent être très faibles voire vides.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/compressionSeuil.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">seuil = 3</div>
+                        <div class="figure-desc">Son 19. Seuillage (Son 2.)</div>
+                    </div>
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/compressionSeuil.png">
+                        <div class="results-text">seuil = 3</div>
+                        <div class="figure-desc">Figure 11. Sonagramme seuillé (Son 19.)</div>
+                    </div>
+                </div>
+
+                <p>Une autre technique qui n’est plus très viable pour de l’écoute 
+                    musicale mais valable pour de la communication, est la compression 
+                    temporelle. Celle-ci est très efficace et se fonde sur le fait que 
+                    nous ne parlions pas à des vitesses phénoménales et que donc le tronquage 
+                    du sonogramme garde une intelligibilité du dialogue. Elle retire donc 1 colonne 
+                    du sonagramme toutes les N colonnes, N étant le facteur de compression temporelle. 
+                    Cela donne donc ceci (Son 20. et Figure 12.). 
+                    Cela reste compréhensible, désagréable mais compréhensible.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/compressionTempo.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">facteur temporel = 2</div>
+                        <div class="figure-desc">Son 20. Compression temporelle (Son 2.)</div>
+                    </div>
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/compressionTempo.png">
+                        <div class="results-text">facteur temporel = 2</div>
+                        <div class="figure-desc">Figure 12. Sonagramme temporellement compressé (Son 20.)</div>
+                    </div>
+                </div>
+
+                <p>Enfin, une compression extrême peut être de reprendre les 
+                    filtres précédemment évoqués couplés aux compressions présentées et 
+                    placés dans l’ordre suivant: passe-bas -> passe-haut -> compression temporelle -> 
+                    compression seuillage -> compression MaxCoeff. Ceci nous donne, selon les paramètres choisis, 
+                    quelque chose qui reste perceptible (Son 22. et Figure 14).
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/parole.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 21. Communication de test</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-3">
+                            <source src="./assets/TP10/sons/compressionAvancee.wav" type="audio/wav">
+                        </audio>
+                        <div class="results-text">20 Hz, 10000 Hz, facteur temporel = 2, seuil = 3, N_coeff = 100</div>
+                        <div class="figure-desc">Son 22. Compression avancée (Son 2.)</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/parole.png">
+                        <div class="figure-desc">Figure 13. Sonagramme d'une communication (Son 21.)</div>
+                    </div>
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP10/figures/compressionAvancee.png">
+                        <div class="results-text">20 Hz, 10000 Hz, facteur temporel = 2, seuil = 3, N_coeff = 100</div>
+                        <div class="figure-desc">Figure 14. Sonagramme à forte compression (Son 22.)</div>
+                    </div>
+
+                </div>
+
+
+                
+            </section>
+            <section>
+                <h2>C. Conclusion</h2>
+                <p>Le sonagramme joue finalement un rôle important dans la modification 
+                    d’un signal sonore car il permet donc de visualiser les fréquences 
+                    en fonction du temps ce qui facilite notamment les 
+                    processus de filtrage et de compression comme nous avons pu le voir.
+                </p>
+            </section>
+            
+        </div>
+
+        
+    </div>
+    
+  
+  
+    
+<script src="script.js"></script>
+</body>
+</html>
+

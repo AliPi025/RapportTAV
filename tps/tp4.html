@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP n°4</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+    <div class="header">
+        <div class="linear-horizontal">
+        <button class="back-button" onclick="location.href='../index.html'">
+            <span></span>
+            <span></span>
+        </button>
+            <h1>TP n°4 – Détection d’objets dans une image</h1>
+            
+        </div>
+        
+    </div>
+
+    <div class="report-text">
+        <div class="bckgnd">
+            <section>
+                <h2>A. Présentation du sujet</h2>
+                <p>Dans ce TP, nous avons mis en place des techniques de détection 
+                    afin de compter des flamants roses sur une image dans le cadre 
+                    d’un recensement de population. L’idée était donc de transposer 
+                    l’utilisation des champs de Markov non pas aux pixels mais à des 
+                    cercles que nous devions placer dans l’image de manière à maximiser 
+                    le niveau de gris total. Pour ce faire, nous sommes partis d’une 
+                    estimation d’un maximum à posteriori que nous avons ensuite modifié et 
+                    affiné afin de “coller” au mieux à notre problème de comptage.
+                </p>
+            </section>
+
+            <section>
+                <h2>B. Détection</h2>
+                <h3>1. Résolution par Champs de Markov</h3>
+                <p>Dans un premier temps, nous avons donc cherché à minimiser l’énergie suivante:</p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-1" src="./assets/TP4/energieCM.png">
+                        <div class="figure-desc">Figure 1. Énergie initiale</div>
+                    </div>
+                </div>
+                <p>Celle-ci implique donc que plus le niveau d’un gris moyen global est élevé, 
+                    plus elle sera faible. Cependant nous avons considéré que beta tendait vers 
+                    l’infini ce qui implique qu’une superposition des cercles n’était absolument 
+                    pas autorisée, ce qui semble logique vis-à-vis du fait que nous travaillons 
+                    sur une colonie de flamants roses.
+                </p>
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/flamantsCM.png">
+                        <div class="results-text">R = 10, N = 200</div>
+                        <div class="figure-desc">Figure 2. Comptage de flamants par Champs de Markov</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/grisCM.png">
+                        <div class="results-text">R = 10, N = 200</div>
+                        <div class="figure-desc">Figure 3. Evolution du niveau de gris moyen (CM)</div>
+                    </div>
+                </div>
+                <p>On obtient donc les résultats en figure 2 et 3. Les cercles semblent bien positionnés, 
+                    seulement, plusieurs flamants roses visibles ne sont pas pris en compte et cela est dû 
+                    au fait que notre nombre de cercles N est fixe. 
+                    C’est pourquoi nous avons dû modifier notre technique de comptage.
+                </p>
+
+                <h3>2. Résolution par Processus ponctuel marqué</h3>
+
+                <p>Afin de remédier à notre problème précédent, nous passons sur l’utilisation 
+                    d’un processus ponctuel marqué. Cela permet à notre énergie d’avoir une dimension temporelle et donc de faire 
+                    varier le nombre N de cercles. Nous devons donc à présent minimiser:
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-1" src="./assets/TP4/energiePPM.png">
+                        <div class="figure-desc">Figure 4. Énergie à minimiser par Processus Ponctuel Marqué</div>
+                    </div>
+                </div>
+
+                <p>On remplace donc notre calcul du niveau de gris moyen par une somme d’énergie 
+                    individuelle à chaque cercle, nous gardons cependant notre a priori sur la 
+                    superposition des cercles. Pour calculer cette énergie individuelle nous utilisons 
+                    une fonction sigmoïde car cela nous permet de faire croître le niveau de gris moyen tout 
+                    en gardant une cohérence sur l’ajout et la suppression des cercles.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/energieInd.png">
+                        <div class="figure-desc">Figure 5. Energie individuelle</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/fonctionSig.png">
+                        <div class="figure-desc">Figure 6. Fonction sigmoïde</div>
+                    </div>
+                </div>
+
+                <p>En ce qui concerne l’algorithme, nous suivons tout d’abord une loi de Poisson 
+                    pour la création de nouveaux cercles. Nous calculons ensuite leur niveau de 
+                    gris et leur énergie individuelle. Suite à cela, nous les trions dans l’ordre 
+                    croissant (croissant plutôt que décroissant pour itérer plus facilement dessus par la suite). 
+                    On parcourt ensuite notre liste de cercles en remontant (d’où le tri croissant précédent) 
+                    et pour chacun, nous calculons sa probabilité de suppression en comparant notamment leur impact 
+                    sur l’énergie globale. Enfin, nous les supprimons “probablement”. 
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/loiPoisson.png">
+                        <div class="figure-desc">Figure 7. Loi de Poisson</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/probaSupp.png">
+                        <div class="figure-desc">Figure 8. Probabilité de suppression</div>
+                    </div>
+                </div>
+
+                <p>Nous obtenons donc les résultats visibles en Figure 9 et 10</p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/flamantsPPM.png">
+                        <div class="results-text">R = 10, N = 275</div>
+                        <div class="figure-desc">Figure 9. Comptage de flamants par Processus Ponctuel Marqué</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/niveauEnergiePPM.png">
+                        <div class="results-text">R = 10, N = 275</div>
+                        <div class="figure-desc">Figure 10. Evolution du niveau d'Énergie (PPM)</div>
+                    </div>
+                </div>
+
+                <p>Les résultats sont plutôt concluants, on remarque encore que certains 
+                    cercles se partagent un même flamant rose. Une manière de résoudre 
+                    ce problème est de modifier la forme de nos marques.
+                </p>
+
+                <h3>3. Modification de la marque</h3>
+
+                <p>Nous pouvons le voir assez facilement, un flamant rose n’est pas parfaitement 
+                    rond, utiliser un cercle n’est donc pas optimal pour le placement et donc le comptage. 
+                    On va donc utiliser des ellipses pour représenter chaque individu. Ce changement induit 
+                    une modification des calculs de niveau de gris moyen mais aussi de vérifications d’intersection 
+                    entre ellipse. Pour ce faire, nous allons utiliser une approximation de surface à l’aide de 
+                    la méthode de Monte-Carlo.  Celle-ci repose sur une approche probabiliste qui consiste à placer 
+                    des points dans un carré (ici a*2, la valeur du grand axe) comme on peut le voir Figure 12. 
+                    et ne garder que les points qui valident la condition:
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-1" src="./assets/TP4/conditionInterieur.png">
+                        <div class="figure-desc">Figure 11. Condition d'appartenance à l'ellipse</div>
+                    </div>
+                </div>
+
+                <p>C’est-à-dire, ceux qui se trouvent à l’intérieur de l’ellipse (points bleus sur la Figure 12.).</p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-1" src="./assets/TP4/pointsApprox.png">
+                        <div class="figure-desc">Figure 12. Exemple d’approximation de surface</div>
+                    </div>
+                </div>
+
+                <p>Donc, pour le niveau de gris moyen, on crée un masque à partir des points bleus 
+                    et on l’applique à la partie de l’image correspondante, 
+                    nous permettant de faire la moyenne du niveau de gris des pixels restants.
+                </p>
+
+                <p>Pour l’intersection, on approxime la surface d’une ellipse et pour chaque autre 
+                    ellipse, à l’aide de la condition Figure 11., on vérifie que moins de 20% des 
+                    points appartiennent à celle-ci et si ce n’est pas le cas, 
+                    il y a intersection et le delta de Kronecker vaut donc 1.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/flamantsPPME.png">
+                        <div class="results-text">R = 12, N = 251</div>
+                        <div class="figure-desc">Figure 13. Comptage de flamants par Processus Ponctuel Marqué Elliptique</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/niveauEnergiePPME.png">
+                        <div class="results-text">R = 12, N = 251</div>
+                        <div class="figure-desc">Figure 14. Evolution du niveau d'Énergie (PPME)</div>
+                    </div>
+                </div>
+
+                <p>On obtient les résultats ci-dessus (Figure 13 et 14), on obtient toujours 
+                    un assez bon niveau d’énergie et les ellipses ne se superposent pas. Il 
+                    nous reste cependant un problème qui se voit assez vite, le placement et 
+                    l’orientation des ellipses. En effet, la forme de la marque ne règle 
+                    pas grand-chose si nous ne les orientons pas correctement.
+                </p>
+
+                <p>Pour centrer et orienter les ellipses sur les flamants nous rajoutons 
+                    donc une étape qui survient lorsqu’une ellipse n’est pas retirée après 
+                    application de la probabilité de suppression. Cela veut donc dire que la 
+                    marque est suffisamment bien placée dans son environnement. Cependant, il 
+                    reste toujours une marge d’erreur (légèrement trop décalé sur un bord par 
+                    rapport au corps du flamant), pour y remédier, à l’aide d’un masque sur l’image 
+                    créé à partir d’une approximation de surface, nous recherchons le gris maximum 
+                    au sein de l’ellipse et en faisons le nouveau centre. Cette étape n’est appliquée 
+                    qu’une seule fois afin de ne pas créer d’aberration où toutes les ellipses 
+                    convergent au même endroit sur un regroupement dense d’individus.
+                </p>
+
+                <p>Après avoir été centré, nous testons, à l’itération suivante, l’effet d’une rotation 
+                    de (pi/4)*compteur sur le niveau de gris moyen de l’ellipse. Si elle est meilleure, 
+                    alors on garde la rotation et on réinitialise le compteur, sinon on ne change rien et 
+                    on ajoute 1 au compteur. Quand le compteur n’est plus dans l’intervalle [1,3] cela signifie 
+                    que toute les rotations ont été 
+                    testé et on n’effectue donc plus le test de rotation sur cette ellipse.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/flamantsPPMEO.png">
+                        <div class="results-text">R = 12, N = 224</div>
+                        <div class="figure-desc">Figure 15. Comptage de flamants par Processus Ponctuel Marqué Elliptique Orienté</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/niveauEnergiePPMEO.png">
+                        <div class="results-text">R = 12, N = 224</div>
+                        <div class="figure-desc">Figure 16. Evolution du niveau d'Énergie (PPMEO)</div>
+                    </div>
+                </div>
+
+                <p>
+                    On obtient donc les résultats ci-dessus (Figure 15 et 16), 
+                    le nombre de flamants roses compté à diminué par rapport aux résultats 
+                    précédents (Figure 13 et 14) mais cela est en partie dû au fait que 
+                    les marques n’essaient plus de se partager un même flamant rose.
+                </p>
+
+                <p>
+                    Une dernière idée serait de réussir à compter les individus plus 
+                    petits/jeunes et qui possède donc un niveau de gris moins élevé. 
+                    Pour ce faire, nous passons le grand axe et le petit axe en paramètre 
+                    de chaque ellipse et nous ajoutons une étape qui survient juste avant 
+                    la fin des itérations (25 itérations avant, pour la Figure 17 et 18) 
+                    et qui réduit le rayon pour tout les derniers 
+                    (passage de 12 à 10). Cela donne donc les résultats Figure 17 et 18.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/flamantsPPMEORed.png">
+                        <div class="results-text">R = 12, N = 235</div>
+                        <div class="figure-desc">Figure 17. Comptage de flamants par PPMEO + réduction du rayon</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP4/niveauEnergiePPMEORed.png">
+                        <div class="results-text">R = 12, N = 235</div>
+                        <div class="figure-desc">Figure 18. Evolution du niveau d'Énergie (PPMEO  + réduction du rayon)</div>
+                    </div>
+                </div>
+
+                <p>On obtient donc un comptage légèrement amélioré avec cet ajout, 
+                    on remarque malgré tout que les individus les plus foncés restent non comptés.
+                </p>
+                
+            </section>
+            <section>
+                <h2>C. Conclusion</h2>
+                <p>Ce mode de comptage est effectivement intéressant lorsque nous travaillons 
+                    sur des images où les individus sont légèrement dispersés et visibles. 
+                    Comme on a pu le voir, les plus petits sont plus sombres et donc plus difficiles 
+                    à détecter et le comptage des regroupements 
+                    trop denses varie en fonction de l’orientation donnée à la marque utilisée.
+                </p>
+            </section>
+            
+        </div>
+
+        
+    </div>
+    
+  
+  
+    
+<script src="script.js"></script>
+</body>
+</html>
+

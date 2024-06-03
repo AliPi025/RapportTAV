@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP n°12</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+    <div class="header">
+        <div class="linear-horizontal">
+        <button class="back-button" onclick="location.href='../index.html'">
+            <span></span>
+            <span></span>
+        </button>
+            <h1>TP n°12 – Séparation de sources</h1>
+            
+        </div>
+        
+    </div>
+
+    <div class="report-text">
+        <div class="bckgnd">
+            <section>
+                <h2>A. Présentation du sujet</h2>
+                <p>L’objectif est de découvrir les différentes méthodes qui permettent de séparer 
+                    une source audio en plusieurs autres. 
+                    L’idée générale étant de pouvoir isoler les différentes composantes/sources du signal.
+                    Nous pourrions prendre l'exemple du domaine de la musique où cette technologie permet de séparer voix et instruments
+                    donnant la possibilité à un compositeur de retravailler un morceau mixé.
+                </p>
+            </section>
+
+            <section>
+                <h2>B. Méthodes de séparation</h2>
+                <h3>1. Séparation harmonique/percussive</h3>
+
+                <p>Cette méthode de séparation est, comme son nom l'indique, basé sur 
+                    la différence visible/audible entre les composantes harmoniques 
+                    (possédant une fréquence à faible variation) 
+                    et percussives (temporalité courte mais composée de nombreuses fréquences).
+                </p>
+                
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/violon.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 1. Morceau de violon</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/batterie.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 2. Morceau de batterie</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/sonosViolonBatterie.png">
+                        <div class="figure-desc">Figure 1. Sonogrammes d’un violon (harmonique) et d’une batterie (percussive)</div>
+                    </div>
+                </div>
+                
+                <p>On voit donc bien que les harmoniques s’apparentent à des 
+                    lignes horizontales sur le sonogramme alors que les percussives 
+                    s’apparentent plus à des lignes verticales. L’idée est donc d’appliquer 
+                    deux masques distincts, l’un avec des composantes horizontales et 
+                    l’autre verticales, à la TFCT d’un signal afin de séparer les instruments.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/violon_batterie.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 3. Mix de violon et batterie (Son 1 et 2)</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP12/figures/sonoMelange.png">
+                        <div class="figure-desc">Figure 2. Sonogramme mélangé d’un violon et d’une batterie</div>
+                    </div>
+                </div>
+
+                <p>Pour pouvoir créer ces masques, nous allons utiliser le sonogramme Figure 2. 
+                    que nous allons filtrer à l’aide d’un filtre médian horizontal et vertical.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/sonosFiltresHP.png">
+                        <div class="figure-desc">Figure 3. Sonogrammes filtrés horizontalement et verticalement</div>
+                    </div>
+                </div>
+
+                <p>Une fois obtenu, nous avons deux possibilités pour les masques, 
+                    soit une méthode binaire qui consiste à dire qu’un coefficient 
+                    du sonogramme est soit harmonique soit percussif. 
+                    Soit une méthode par pourcentage d’appartenance à l’un ou l’autre.
+                </p>
+
+                <div class="linear-horizontal space-evenly ">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/masquesBinaire.png">
+                        <div class="figure-desc">Figure 4. Masques binaires harmonique et percussif</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+                <div class="linear-horizontal space-evenly ">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/masquesDoux.png">
+                        <div class="figure-desc">Figure 5. Masques doux harmonique et percussif</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/resBinaire.png">
+                        <div class="figure-desc">Figure 6. Résultats par masquage binaire</div>
+                    </div>
+                </div>
+
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/HPSS_harmoniqueBin.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 4. Partie harmonique par masquage binaire</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/HPSS_percussiveBin.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 5. Partie percussive par masquage binaire</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/resDoux.png">
+                        <div class="figure-desc">Figure 7. Résultats par masquage doux</div>
+                    </div>
+                </div>
+
+                <div class="spaceV"></div>
+
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/HPSS_harmoniqueDoux.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 6. Partie harmonique par masquage doux</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/HPSS_percussiveDoux.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 7. Partie percussive par masquage doux</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <p>Les résultats de cette méthode restent bons sur des extraits assez simples 
+                    avec des instruments dont les notes ne varient pas trop au cours du temps 
+                    mais deviennent rapidement assez mauvais sur des voix 
+                    (par exemple les intonations de Michael Jackson sur Beat It sont prises pour des percussions).
+                </p>
+
+                <h3>2. Séparation par NMF</h3>
+
+                <p>L’idée de la séparation en matrices non négatives est de considérer 
+                    que notre sonogramme S est une matrice à coefficients non négatifs 
+                    et qu’elle est le produit de de deux autres matrices D et A (à coefficients non négatifs). 
+                    Dans le but d’approcher au mieux notre matrice S, 
+                    nous utilisons une descente de gradient alternée sur A et D.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/eqA.png">
+                        <div class="figure-desc">Figure 8. Expression pour la construction de la matrice A</div>
+                    </div>
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/eqD.png">
+                        <div class="figure-desc">Figure 9. Expression pour la construction de la matrice D</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+                
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/NMFFigure.png">
+                        <div class="figure-desc">Figure 10. Exemple de séparation par NMF d’un sonogramme</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+                <div class="spaceV"></div>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/Au clair de la lune.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 8. Extrait de test</div>
+                    </div>
+                </div>
+
+
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/MatrixDA.png">
+                        <div class="results-text">R = 3</div>
+                        <div class="figure-desc">Figure 11. Matrices D et A</div>
+                    </div>
+                </div>
+
+                <div class="spaceV"></div>
+
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/composante_1.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 9. Composante 1 obtenue par NMF (Ré)</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/composante_2.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 10. Composante 2 obtenue par NMF (Do)</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/composante_3.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 11. Composante 3 obtenue par NMF (Mi)</div>
+                    </div>
+                </div>
+
+                <p>La décomposition faite sur “Au clair de la lune” n’est pas mauvaise, 
+                    les composantes de sortie donnent effectivement une séparation de chaque note. 
+                    Seulement l’utilisateur doit renseigner les notes utilisées en amont et un seul 
+                    instrument est utilisé. Il faut donc en effet un dictionnaire bien plus 
+                    complet qui permette une meilleure initialisation de l'algorithme.
+                </p>
+
+                <h3>3. Séparation par réseaux de neurones</h3>
+
+                <p>Cette dernière méthode est une des plus récentes et l’une des plus performantes 
+                    pour ce type de problème. N’ayant pas les moyens d’une entreprise internationale, 
+                    nous allons utiliser un dataset composé d’un morceau. Nous entraînerons notre réseau 
+                    à séparer la voix de la partie instrumentale sur le début du morceau et validerons son 
+                    apprentissage sur la fin. Pour le morceau, nous avons à notre disposition les deux composantes 
+                    séparées (Son 12 et 13) afin de pouvoir comparer à la fin, et nous donnons le mix (Son 14.) 
+                    à notre réseau après conversion en mono et ré-échantillonage.
+                </p>
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/voixReseau.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 12. Morceau partie voix</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/instruReseau.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 13. Morceau partie instrumentale</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+                <div class="linear-horizontal space-evenly sounds">
+                    <h2>=</h2>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/mixReseau.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 14. Morceau mixé (Son 12 et 13)</div>
+                    </div>
+                </div>
+
+                <p>Notre réseau est une reprise du réseau Figure 12, nous lui retirons deux “étages” 
+                    de convolution et déconvolution afin de garder un temps de calcul raisonnable.
+                </p>
+
+                <p>Un bloc de descente est composé d’un Conv2D, BatchNormalization et LeakyReLU. 
+                    Le bottleneck est aussi composé d’un Conv2D, BatchNormalization et LeakyReLU. Un bloc de remontée 
+                    est composé d’un Conv2DTranspose, BatchNormalization, Dropout, Concatenate et ReLU.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/reseauUNET.png">
+                        <div class="figure-desc">Figure 12. Réseau de neurones pour la séparation de sources</div>
+                    </div>
+                </div>
+
+                <p>L’apprentissage nous donne donc les résultats ci-dessous, la loss et la validation 
+                    loss sont satisfaisantes, on constate tout de même un peu de sur-apprentissage.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/reseau.png">
+                        <div class="figure-desc">Figure 13. Résultats de l’apprentissage du réseau</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/voixPrediteReseau.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 15. Partie voix prédite</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/instruPrediteReseau.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 16. Partie instrumentale prédite</div>
+                    </div>
+                </div>
+                
+                <p>Les pistes séparées (Son 15 et 16) sont effectivement 
+                    meilleures que celles que nous avions avec les méthodes précédentes.
+                </p>
+
+                <p>Pour ce qui est de l’amélioration de ce réseau, la tâche est assez complexe de par le 
+                    fait que la base de données ne le soit pas plus. Cependant, il est possible de réduire 
+                    très légèrement la validation loss en passant l’alpha des blocs de descente à 0.1, doubler 
+                    le nombre de filtres et passer la taille du kernel des blocs d’entrées et de sortie à 3 plutôt que 5. 
+                    On peut aussi réduire le nombre d’epochs à une centaine afin de diminuer le sur-apprentissage.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container comparaison">
+                        <img class="line-3" src="./assets/TP12/figures/reseauModifie.png">
+                        <div class="figure-desc">Figure 14. Résultats de l’apprentissage du réseau modifié</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+                <div class="linear-horizontal space-evenly sounds">
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/voixPrediteReseau.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 17. Partie voix prédite (réseau modifié)</div>
+                    </div>
+                    <div class="figure-container">
+                        <audio controls class="line-2">
+                            <source src="./assets/TP12/sons/instruPrediteReseau.wav" type="audio/wav">
+                        </audio>
+                        <div class="figure-desc">Son 18. Partie instrumentale prédite (réseau modifié)</div>
+                    </div>
+                </div>
+                
+            </section>
+            <section>
+                <h2>C. Conclusion</h2>
+                <p>Les réseaux de neurones semblent être la meilleures approches pour ce problème, 
+                    il serait compliqué de trouver une autre technique qui permette de séparer des sons qui, 
+                    même s'ils semblent se répéter ou avoir la même fréquence, reste une composante aléatoire. 
+                    Cependant, bien qu’il ne soit effectivement pas réellement possible de compétiter avec des 
+                    grandes entreprises, le fait de pouvoir créer 
+                    et utiliser un réseau fonctionnel à une échelle individuelle reste impressionnant.
+                </p>
+            </section>
+            
+        </div>
+
+        
+    </div>
+    
+  
+  
+    
+<script src="script.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP n°11</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+    <div class="header">
+        <div class="linear-horizontal">
+        <button class="back-button" onclick="location.href='../index.html'">
+            <span></span>
+            <span></span>
+        </button>
+            <h1>TP n°11 – Reconnaissance Musicale</h1>
+            
+        </div>
+        
+    </div>
+
+    <div class="report-text">
+        <div class="bckgnd">
+            <section>
+                <h2>A. Présentation du sujet</h2>
+                <p>Ce TP reprend un article scientifique qui explique comment chercher 
+                    efficacement une musique dans une base de données. C’est notamment 
+                    celui qui a conduit au développement de l’application Shazam qui permet 
+                    donc de reconnaître n’importe quelle musique à partir d’un extrait. 
+                    L’idée ici était donc de recréer ses composantes à notre échelle.
+                </p>
+            </section>
+
+            <section>
+                <h2>B. Processus de Reconnaissance</h2>
+                <h3>1. Pics spectraux</h3>
+
+                <p>La première étape est donc d’identifier les “pics spectraux” sur 
+                    le sonogramme de l’extrait (sonogramme obtenu par TFCT, voir TP n°10).
+                     Ces pics sont en fait les maxima locaux trouvés lors du passage d’une 
+                     fenêtre glissante dont la taille modifie 
+                    le nombre de pics enregistrés. Cela donne ceci sur l’extrait suivant
+                </p>
+                
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <audio controls class="line-1">
+                            <source src="./assets/TP11/sons/Ben E. King-Stand By Me.ogg" type="audio/ogg">
+                        </audio>
+                        <div class="figure-desc">Son 1. Son de test</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-2" src="./assets/TP11/figures/sonoPics.png">
+                        <div class="figure-desc">Figure 1. Sonagramme avec ses pics spectraux (Son 1.)</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+                <h3>2. Création de liens</h3>
+
+                <p>Une fois que nous avons calculé les différents pics de notre extrait, 
+                    il faut à présent les lier entre eux afin de simplifier la recherche 
+                    dans la base de données (dont nous parlerons par la suite). On cherche 
+                    donc à créer des paires de pics voisins, pour ce faire nous allons pour 
+                    chaque pic, itérer sur les autres et, si leur différence temporelle est 
+                    inférieure à un seuil deltaT fixé et supérieure à 0 (le lien ne se fait qu’en avançant) 
+                    mais aussi que leur distance 
+                    fréquentiel est inférieure à un seuil deltaF, alors on les lie ensemble.
+                </p>
+
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP11/figures/sonoPicsPaires.png">
+                        <div class="figure-desc">Figure 2. Sonagramme avec ses paires de pics spectraux (Son 1.)</div>
+                    </div>
+                </div>
+
+                <h3>3. Base de données</h3>
+
+                <p>A présent, nous devons chercher la présence de l’extrait dans la base de 
+                    données. Celle-ci est constituée comme un extrait à partir de pics 
+                    spectraux mais cette fois-ci provenant de nombreux morceaux différents. 
+                    Il faut donc créer un identifiant unique qui permette de retrouver rapidement 
+                    les paires ainsi que que le morceau associé. Pour y parvenir, l’identifiant 
+                    est créé à partir des deux pics. Soit (k1, m1) et (k2,m2) nos pics avec ki 
+                    la fréquence et mi la position temporelle relative dans le morceau, l’identifiant 
+                    est une concaténation des valeurs binaires de k1,k2 et m2-m1. A cet identifiant 
+                    on lie donc un morceau mais aussi 
+                    m1 qui permet de connaître l’apparition de la paire dans le morceau.
+                </p>
+
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP11/figures/DBPics.png">
+                        <div class="figure-desc">Figure 3. Base de données des paires de pics</div>
+                    </div>
+                </div>
+
+                <h3>4. Processus</h3>
+
+                <p>De la même manière que pour la base de données, 
+                    nous créons un tableau d’identifiants à partir des paires de notre extrait.
+                </p>
+
+                <p>Ensuite, une première méthode permettant de retrouver le morceau consiste 
+                    à chercher dans la base de données nos identifiants et récupérer pour chacun, 
+                    le morceau associé. On garde finalement le morceau le plus souvent récupéré.
+                </p>
+
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP11/figures/statsMethode1.png">
+                        <div class="figure-desc">Figure 4. Résultats du calcul de bonne reconnaissance avec la première méthode</div>
+                    </div>
+                </div>
+
+                <p>Cette première méthode est donc perfectible. En effet, 
+                    nous n’avons utilisé que le numéro du morceau en laissant 
+                    de côté la valeur “mi” qui permet de situer temporellement la paire dans 
+                    le morceau entier. Or pour chaque paire de notre extrait nous avons aussi 
+                    sa position temporelle relative “me”. Ainsi, si je prends le morceau original et 
+                    que je soustrait chaque début de paire “me” de mon extrait à chaque début de 
+                    paire “mi” correspondante dans le morceau, j'obtiens une même valeur qui représente 
+                    le temps t, temps de départ de l’extrait au sein du morceau. Et donc si ce n’est pas 
+                    le bon morceau, ce temps t ne sera pas corrélé entre tous les calculs. Donc cette fois-ci, 
+                    le bon morceau est celui qui possède le plus grand nombre de fois le même temps t.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container big">
+                        <img class="line-3" src="./assets/TP11/figures/exempleMethode2.png">
+                        <div class="figure-desc">Figure 5. Exemple de la seconde méthode</div>
+                    </div>
+                </div>
+                <div class="spaceV"></div>
+
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP11/figures/statsMethode2.png">
+                        <div class="figure-desc">Figure 6. Résultats du calcul de bonne reconnaissance avec la seconde méthode</div>
+                    </div>
+                </div>
+
+
+                <p>Nous obtenons donc de meilleurs résultats mais ceux-ci sont fait dans des 
+                    conditions de silence total. La plupart du temps, ces extrait sont enregistrés 
+                    dans des soirées, dans la rue, le métro, etc, en somme des endroits où le bruit 
+                    parasite est inévitable. Une solution assez simple est de demander aux personnes 
+                    présentes de se taire ou de se rapprocher des enceintes. 
+                    Sinon, la solution qu’utilise Shazam est de faire durer l’extrait plus longtemps.
+                </p>
+
+                <div class="linear-horizontal space-evenly">
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP11/figures/statsMethode2Bruit.png">
+                        <div class="results-text">bruit, duree_extrait = 10</div>
+                        <div class="figure-desc">Figure 7. Résultats du calcul de bonne reconnaissance avec la seconde méthode</div>
+                    </div>
+                    <div class="figure-container">
+                        <img class="line-3" src="./assets/TP11/figures/statsMethode2BruitDuree.png">
+                        <div class="results-text">bruit, duree_extrait = 30</div>
+                        <div class="figure-desc">Figure 8. Résultats du calcul de bonne reconnaissance avec la seconde méthode</div>
+                    </div>
+                </div>
+
+                <p>On remarque donc bien que l'impact du bruit (maintenu à une certaine hauteur) peut être drastiquement
+                    réduit à l'aide d'une exposition plus longue.
+                </p>
+                
+            </section>
+            <section>
+                <h2>C. Conclusion</h2>
+                <p>C’est toujours intéressant de voir une technique de la sorte de par le fait 
+                    qu’elle est fortement corrélée aux progrès technologiques dans lequel elle 
+                    a été créée. Plus les limitations sont élevées, plus l’ingéniosité est à l'œuvre, 
+                    et on le voit ici, notamment avec le rangement des identifiants qui sont créés et 
+                    modifiés de manière à rentrer parfaitement dans 32 bits pour minimiser l’espace de 
+                    stockage et le temps de recherche. De plus, si l’application Shazam avait été 
+                    développée à cette époque-ci, 
+                    elle aurait très probablement été implémentée grâce à un réseau de neurones.
+                </p>
+            </section>
+            
+        </div>
+
+        
+    </div>
+    
+  
+  
+    
+<script src="script.js"></script>
+</body>
+</html>
+
